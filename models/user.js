@@ -15,8 +15,8 @@ class User {
 
   static async register({ username, password, first_name, last_name, phone }) {
     const result = await db.query(
-      `INSERT INTO users (username, password, first_name, last_name, phone)
-        VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO users (username, password, first_name, last_name, phone, join_at)
+        VALUES ($1, $2, $3, $4, $5, current_timestamp)
         RETURNING username, password, first_name, last_name, phone
       `, [username, password, first_name, last_name, phone]);
 
@@ -116,13 +116,22 @@ class User {
 
     //TODO: Distinguish between no user with username and username exists but no messages
 
-    const messages = results.rows.map(function(r){ return {"id": r.id,
-      "to_user": {"username": r.username,
-        "first_name": r.first_name,
-        "last_name": r.last_name,
-        "phone": r.phone},
-      "sent_at": r.sent_at,
-      "read_at": r.read_at}});
+
+    if (!results.rows) throw new NotFoundError(`No user messages from ${username}`);
+
+    const messages = results.rows.map(
+    function(r){
+        return {"id": r.id,
+                "to_user": {
+                  "username": r.username,
+                  "first_name": r.first_name,
+                  "last_name": r.last_name,
+                  "phone": r.phone},
+                "sent_at": r.sent_at,
+                "read_at": r.read_at}
+            });
+
+    return messages;
   }
 
   /** Return messages to this user.
@@ -134,6 +143,36 @@ class User {
    */
 
   static async messagesTo(username) {
+    const results = await db.query(
+      `SELECT m.id,
+          f.username,
+          f.first_name,
+          f.last_name,
+          f.phone,
+          m.body,
+          m.sent_at,
+          m.read_at
+        FROM messages AS m
+        JOIN users AS f
+          ON m.from_username = f.username
+        WHERE m.to_username = $1
+      `, [username]);
+
+    if (!results.rows) throw new NotFoundError(`No user messages for ${username}`);
+
+    const messages = results.rows.map(
+    function(r){
+        return {"id": r.id,
+                "from_user": {
+                  "username": r.username,
+                  "first_name": r.first_name,
+                  "last_name": r.last_name,
+                  "phone": r.phone},
+                "sent_at": r.sent_at,
+                "read_at": r.read_at}
+            });
+
+    return messages;
   }
 }
 
