@@ -57,14 +57,14 @@ describe("Message Routes tests", function () {
     const response = await request(app)
       .get(`/messages/${m1.id}`)
       .query({ _token: user1Token });
-
+    //expect the full object; response.body equals{ message: {...} }
     expect(response.body.message).toEqual({
       id: m1.id,
       body: m1.body,
       sent_at: expect.any(String),
       read_at: null,
       from_user: {
-        username: m1.from_username,
+        username: m1.from_username, //put the string of what the username should be exactly
         first_name: "Bob",
         last_name: "Smith",
         phone: "+14150000000"
@@ -85,7 +85,9 @@ describe("Message Routes tests", function () {
     expect(response.statusCode).toEqual(401);
   });
 
+  //shorten lines to stay within guidelines
   test("Incorrect user logged in should not see message details", async function () {
+    //better to use the model method for registering rather than the route
     const response3 = await request(app)
       .post("/auth/register")
       .send({
@@ -119,6 +121,7 @@ describe("Message Routes tests", function () {
       );
 
     expect(response.statusCode).toEqual(201);
+    //expect whole object again; response.body equals {message:{}}
     expect(response.body.message).toEqual(
       {
         id: expect.any(Number),
