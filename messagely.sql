@@ -24,6 +24,12 @@ CREATE TABLE messages (
   read_at TIMESTAMP WITH TIME ZONE);
 
 
+-- INSERT INTO users(username, password, first_name, last_name, phone, join_at)
+--             VALUES('Teagan', 'testing', 'Eric', 'Huie', '5553336666', current_timestamp);
+
+-- const User = require("./user")
+-- await User.register({"username": 'Teagan', "password": 'testing', "first_name": 'Eric', "last_name": 'Huie', "phone": '5553336666'})
+-- password hash for username 'Teagan':  $2b$12$TAl4yfZ0Hw6r.Gs7TZExUuxXzmsFifP2VgjxFznpqE4QyQcNJGln6
 \echo 'Delete and recreate messagely_test db?'
 \prompt 'Return for yes or control-C to cancel > ' foo
 
