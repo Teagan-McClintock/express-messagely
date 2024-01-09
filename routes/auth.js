@@ -5,6 +5,7 @@ const router = new Router();
 const { SECRET_KEY, BCRYPT_WORK_FACTOR } = require("../config");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const { UnauthorizedError } = require("../expressError");
 
 /** POST /login: {username, password} => {token} */
 
@@ -16,7 +17,7 @@ router.post("/login", async function (req, res) {
   const password = req.body.password;
 
   const isValidCredentials = await User.authenticate(username, password);
-  if (isValidCredentials) {
+  if (isValidCredentials === true) {
     const lastLogin = await User.updateLoginTimestamp(username);
     const payload = { "username": username };
     const token = jwt.sign(payload, SECRET_KEY);

@@ -2,7 +2,7 @@
 
 /** User of the site. */
 
-const { NotFoundError } = require("../expressError");
+const { NotFoundError, BadRequestError, UnauthorizedError } = require("../expressError");
 const db = require("../db");
 const { BCRYPT_WORK_FACTOR } = require("../config");
 
@@ -44,7 +44,7 @@ class User {
 
     const user = result.rows[0];
 
-    if (!user) throw new NotFoundError(`No user ${username}`);
+    if (!user) throw new UnauthorizedError(`No user ${username}`);
 
     if (await bcrypt.compare(password, user.password) === true){
       return true;
