@@ -51,7 +51,7 @@ router.post("/register", async function (req, res) {
   };
 
   const token = jwt.sign(payload, SECRET_KEY);
-  return res.json({ token });
+  return res.status(201).json({ token });
 
 });
 
