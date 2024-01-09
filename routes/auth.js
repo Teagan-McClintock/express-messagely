@@ -8,21 +8,21 @@ const jwt = require("jsonwebtoken");
 
 /** POST /login: {username, password} => {token} */
 
-router.post("/login", async function(req, res){
+router.post("/login", async function (req, res) {
   if (req.body === undefined
     || !("username" in req.body)
     || !("password" in req.body)) throw new BadRequestError();
   const username = req.body.username;
   const password = req.body.password;
 
-  const isValidCredentials = await User.authenticate(username,password);
-  if(isValidCredentials){
+  const isValidCredentials = await User.authenticate(username, password);
+  if (isValidCredentials) {
     const lastLogin = await User.updateLoginTimestamp(username);
-    const payload = { "username": username, "last_login_at": lastLogin };
+    const payload = { "username": username };
     const token = jwt.sign(payload, SECRET_KEY);
     return res.json({ token });
   }
-  else{
+  else {
     throw new UnauthorizedError("Invalid user/password");
   }
 });
@@ -33,7 +33,7 @@ router.post("/login", async function(req, res){
  * {username, password, first_name, last_name, phone} => {token}.
  */
 
-router.post("/register", async function(req, res){
+router.post("/register", async function (req, res) {
   if (req.body === undefined
     || !("username" in req.body)
     || !("password" in req.body)
@@ -41,15 +41,14 @@ router.post("/register", async function(req, res){
     || !("last_name" in req.body)
     || !("phone" in req.body)) throw new BadRequestError();
 
-  const {username, password, first_name, last_name, phone} = req.body;
+  const { username, password, first_name, last_name, phone } = req.body;
   const newUser = await User.register(
-    {username, password, first_name, last_name, phone});
+    { username, password, first_name, last_name, phone });
   const lastLogin = await User.updateLoginTimestamp(newUser.username);
-  const payload = { "username": newUser.username,
-    "first_name": newUser.first_name,
-    "last_name": newUser.last_name,
-    "phone": newUser.phone,
-    "last_login_at": lastLogin };
+  const payload = {
+    "username": newUser.username,
+  };
+
   const token = jwt.sign(payload, SECRET_KEY);
   return res.json({ token });
 

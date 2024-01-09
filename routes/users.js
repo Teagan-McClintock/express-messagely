@@ -14,7 +14,7 @@ const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
  *
  **/
 
-router.get("/", ensureLoggedIn, async function(req, res){
+router.get("/", ensureLoggedIn, async function (req, res) {
   const users = await User.all();
 
   return res.json({ users });
@@ -27,11 +27,11 @@ router.get("/", ensureLoggedIn, async function(req, res){
  *
  **/
 
-router.get("/:username", ensureCorrectUser, async function(req, res){
+router.get("/:username", ensureCorrectUser, async function (req, res) {
   const username = req.params.username;
 
   const user = await User.get(username);
-  return res.json({user});
+  return res.json({ user });
 });
 
 
@@ -45,6 +45,12 @@ router.get("/:username", ensureCorrectUser, async function(req, res){
  *
  **/
 
+router.get("/:username/to", ensureCorrectUser, async function (req, res) {
+  const username = req.params.username;
+
+  const messages = await User.messagesTo(username);
+  return res.json({ messages });
+});
 
 /** GET /:username/from - get messages from user
  *
@@ -55,5 +61,11 @@ router.get("/:username", ensureCorrectUser, async function(req, res){
  *                 to_user: {username, first_name, last_name, phone}}, ...]}
  *
  **/
+router.get("/:username/from", ensureCorrectUser, async function (req, res) {
+  const username = req.params.username;
+
+  const messages = await User.messagesFrom(username);
+  return res.json({ messages });
+});
 
 module.exports = router;
