@@ -16,6 +16,8 @@ describe("Message Routes tests", function () {
     await db.query("DELETE FROM messages");
     await db.query("DELETE FROM users");
 
+    //change names,phone numbers, etc to be more logical and readable
+    //test1 and test2 versus bob and test
     let response = await request(app)
       .post("/auth/register")
       .send({
